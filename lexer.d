@@ -11,7 +11,7 @@ enum LexKey {
   COLON, MINUS, PLUS, COMMA, DOT, SEPARATOR,
 
   // directives               8bit 16bit 32bit
-  INCLUDE, ORG, ASCII, ASCIZ, BYTE, INT, LONG, // FLOAT, DOUBLE,
+  INCLUDE, ORG, ASCII, ASCIZ, BYTE, INT, LONG, BLKW, FILL, // FLOAT, DOUBLE,
 
   MACROSTART, MACROEND,
 
@@ -50,6 +50,7 @@ shared static this() {
   WORDS = [
     ".INCLUDE": LexKey.INCLUDE, ".ORG": LexKey.ORG,
     ".ASCII": LexKey.ASCII, ".ASCIZ": LexKey.ASCIZ,
+    ".BLKW": LexKey.BLKW, ".FILL": LexKey.FILL,
     ".BYTE": LexKey.BYTE, ".INT": LexKey.INT, ".LONG": LexKey.LONG,
     ".MACRO": LexKey.MACROSTART, ".MEND": LexKey.MACROEND,
     
@@ -204,21 +205,30 @@ class Lexer {
       // string
       else if (current == '"') {
         sym = LexKey.STRING;
-        bool ignoreNext;
+        bool backslash;
         char[] str;
         getc();
 
         while (true) {
-          if (current == '\\' && !ignoreNext) {
+          if (current == '\\' && !backslash) {
             getc();
-            ignoreNext = true;
+            backslash = true;
           }
-          else if (current == '"' && !ignoreNext) {
+          else if (current == '"' && !backslash) {
             getc();
             break;
           }
+          else if (backslash) {
+            switch (current) {
+              case 'n': str ~= '\n'; break;
+              case 'r': str ~= '\r'; break;
+              case 'b': str ~= '\b'; break;
+              default: error("Expected backslash symbol"); break;
+            }
+            backslash = false;
+            getc();
+          }
           else {
-            ignoreNext = false;
             str ~= current;
             getc();
           }
@@ -277,7 +287,7 @@ class Lexer {
       }
       else if (isAlpha(current) || current == '.') {
         char[] ident;
-        while (isAlpha(current) || current == '.') {
+        while (isAlpha(current) || current == '.' || (current >= '0' && current <= '9')) {
           ident ~= current;
           getc();
         }
