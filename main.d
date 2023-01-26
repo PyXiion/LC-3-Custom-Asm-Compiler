@@ -58,7 +58,8 @@ int main(string[] args)
             for (int i = depth * 2 - 1; i >= 0; --i) {
                 if (i == 0) write('-');
                 else if (i == 1) write('+');
-                else if (i % 2 == 0) write('|');
+                else if (i % 2 == 1) write('|');
+                else write(' ');
             }
         }
         write(to!string(n.kind));
