@@ -7,6 +7,7 @@ import std.getopt;
 import std.conv;
 import parser;
 import lexer;
+import compiler;
 
 int main(string[] args)
 {
@@ -89,6 +90,14 @@ int main(string[] args)
     }
 
     printNode(n);
+
+    Compiler compiler;
+    compiler.compile(n);
+
+    foreach (c; compiler.getCode) {
+        write(format("%x", c));
+    }
+    writeln();
     
 	return 0;
 }

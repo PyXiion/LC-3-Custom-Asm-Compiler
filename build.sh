@@ -21,4 +21,4 @@
 #   sources[i]="\"$source_dir/${sources[i]}\""
 # done
 
-ldc2 -g -od=./obj -of=./main main.d lexer.d parser.d
+ldc2 -g -od=./obj -of=./main main.d lexer.d parser.d compiler.d

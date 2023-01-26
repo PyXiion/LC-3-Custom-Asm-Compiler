@@ -4,8 +4,7 @@ import std.conv;
 import parser;
 import lexer;
 
-short sign_extend(uint16_t x, int bitcount)
-{
+short sign_extend(int x, int bitcount) {
   if ((x >> (bitcount - 1)) & 1) {
     x |= (0xFFFF << bitcount);
   }
@@ -46,6 +45,10 @@ class Compiler {
 
   this(Parser p) {
     parser = p;
+  }
+
+  ushort[] getCode() const {
+    return code;
   }
 
   // ADD, AND
@@ -166,6 +169,9 @@ class Compiler {
           addInstructionADD_AND(instr, r0, r1, requireRegArg(node, childCounter));
         else
           error("Incorrect argument. Register or decimal expected");
+        break;  
+      default:
+        error("Unexpected token");
     }
   }
 }
