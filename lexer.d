@@ -128,7 +128,9 @@ class Lexer {
 
   private void error(string msg) {
     import core.stdc.stdlib;
-    writeln("Lexer error: " ~ msg);
+    import std.format;
+    writeln(format("Lexer error at line %d, pos %d.\n" ~
+                   "%s", getLine, getCur, msg));
     exit(1);
   }
   private void getc() {
