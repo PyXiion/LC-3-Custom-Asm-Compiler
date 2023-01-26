@@ -1,4 +1,5 @@
 .vscode/launch.json
 ./bin/**
-./obj/**
+obj/**
 main
+a.out
