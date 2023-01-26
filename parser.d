@@ -7,7 +7,7 @@ import lexer;
 
 enum TokenType {
   ROOT,
-  ORG, INCLUDE, ASCII, ASCIZ, BYTE, INT, LONG, 
+  ORG, INCLUDE, ASCII, ASCIZ, BYTE, INT, LONG, BLKW, FILL,
 
   LABEL, ID, 
 
@@ -61,6 +61,7 @@ shared static this() {
   directiveNum[LexKey.BYTE] = TokenType.BYTE;
   directiveNum[LexKey.INT] = TokenType.INT;
   directiveNum[LexKey.LONG] = TokenType.LONG;
+  directiveNum[LexKey.BLKW] = TokenType.BLKW;
 }
 
 struct NodeOptions {
@@ -165,9 +166,9 @@ class Parser {
       }
     }
     else if (lex.getSym in directiveStr) {
+      n = new Node(directiveStr[lex.getSym]);
       lex.next_token();
       if (lex.getSym == LexKey.STRING) {
-        n = new Node(directiveStr[lex.getSym]);
         n.addArg(lex.getValue);
         lex.next_token();
       }
@@ -176,8 +177,8 @@ class Parser {
       }
     }
     else if (lex.getSym in directiveNum) {
-      lex.next_token();
       n = new Node(directiveNum[lex.getSym]);
+      lex.next_token();
       n.addArg(parseNum);
     }
     // macros
@@ -236,7 +237,7 @@ class Parser {
         n.addArg(imm5);
       }
       else {
-        n.options.regs ~= parseReg();
+        n.addArg(parseReg);
       }
     }
     else if (lex.getSym in instrOneReg) {
